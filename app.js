@@ -8,8 +8,14 @@ const cors = require('cors');
 
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors());
 app.use(express.static(path.join(__dirname, './public')));
+
+const corsOptions = {
+    origin: ['http://localhost:4000'], 
+    methods: 'GET,POST'
+};
+
+app.use(cors(corsOptions));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'home.html'));
 });
