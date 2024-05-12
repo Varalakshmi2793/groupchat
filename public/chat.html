@@ -1,69 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat App</title>
-  <link rel="stylesheet" href="style2.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="style2.css">
 </head>
+
 <body>
-  <div id="chat">
-    <div id="messages"></div>
-    <input type="text" id="messageInput" placeholder="Type your message...">
-    <button id="sendButton">Send</button>
-  </div>
+    <div class="chat-container">
+        <div class="chat-room-info">
+            <h2>Chat Box</h2>
+        </div>
+        <div id="chat-messages" class="chat-messages">
 
-  <script>
-    // const socket = new WebSocket("ws://localhost:3000");
-    // socket.onmessage = function(event) {
-    //   const message = JSON.parse(event.data);
-    //   displayMessage(message);
-    // };
+        </div>
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button id="send-btn">Send</button>
+    </div>
 
-    function displayMessage(message) {
-      const messageDiv = document.createElement("div");
-      messageDiv.classList.add("message");
-      if (message.sender === "you") {
-        messageDiv.classList.add("your-message");
-      } else {
-        messageDiv.classList.add("friend-message");
-      }
-      messageDiv.textContent = message.content;
-      document.getElementById("messages").appendChild(messageDiv);
-  
-      document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
-    }
+    <script>
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-btn');
+        const chatMessages = document.getElementById('chat-messages');
+        const roomInfo = document.querySelector('.chat-room-info');
 
-    document.getElementById("sendButton").addEventListener("click", function() {
-      const messageContent = document.getElementById("messageInput").value.trim();
-      if (messageContent !== "") {
-        const message = {
-          content: messageContent,
-          sender: "you"
-        };
-        socket.send(JSON.stringify(message));
-        displayMessage(message);
-        document.getElementById("messageInput").value = ""; 
-    }
-    });
+        const friendName = "Friend";
+        const roomName = "Chat App";
 
-    function friendJoined() {
-      const message = {
-        content: "Friend joined",
-        sender: "system"
-      };
-      displayMessage(message);
-    }
+        function displayMessage(sender, message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            if (sender === "You") {
+                messageDiv.classList.add('you-message');
+            } else {
+                messageDiv.classList.add('friend-message');
+            }
+            messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatMessages.appendChild(messageDiv);
+        }
 
-    function youJoined() {
-      const message = {
-        content: "You joined",
-        sender: "system"
-      };
-      displayMessage(message);
-    }
+        async function sendMessage() {
+            const message = messageInput.value;
+            if (message.trim() !== '') {
+                displayMessage("You", message);
+                messageInput.value = '';
+                try {
+                    const response = await fetch('/message', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ sender: "You", content: message })
+                    });
+                    if (!response.ok) {
+                        throw new Error('Failed to send message');
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+        }
 
-    
-  </script>
+        async function fetchMessages() {
+            try {
+                const response = await fetch('/messages');
+                const messages = await response.json();
+                messages.forEach(message => {
+                    displayMessage(message.sender, message.content);
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+
+        displayMessage("You", "joined");
+        displayMessage(friendName, "joined");
+
+        roomInfo.querySelector('h2').textContent = `Room: ${roomName}`;
+
+        fetchMessages();
+
+    </script>
 </body>
+
 </html>

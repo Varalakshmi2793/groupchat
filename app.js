@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const sequelize = require('./path/database');
 const loginrouter = require('./router/login');
+const chatroutes = require('./router/chat');
 const cors = require('cors');
 
 app.use(express.urlencoded({ extended: false }));
@@ -28,6 +29,10 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 app.use(loginrouter);
+app.get('/messages', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'chat.html'));
+});
+app.use(chatroutes);
 
 sequelize.sync().then(() => {
     app.listen(4000);
