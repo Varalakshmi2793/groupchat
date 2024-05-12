@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat App</title>
+  <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+  <div id="chat">
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Type your message...">
+    <button id="sendButton">Send</button>
+  </div>
+
+  <script>
+    // const socket = new WebSocket("ws://localhost:3000");
+    // socket.onmessage = function(event) {
+    //   const message = JSON.parse(event.data);
+    //   displayMessage(message);
+    // };
+
+    function displayMessage(message) {
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message");
+      if (message.sender === "you") {
+        messageDiv.classList.add("your-message");
+      } else {
+        messageDiv.classList.add("friend-message");
+      }
+      messageDiv.textContent = message.content;
+      document.getElementById("messages").appendChild(messageDiv);
+  
+      document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+    }
+
+    document.getElementById("sendButton").addEventListener("click", function() {
+      const messageContent = document.getElementById("messageInput").value.trim();
+      if (messageContent !== "") {
+        const message = {
+          content: messageContent,
+          sender: "you"
+        };
+        socket.send(JSON.stringify(message));
+        displayMessage(message);
+        document.getElementById("messageInput").value = ""; 
+    }
+    });
+
+    function friendJoined() {
+      const message = {
+        content: "Friend joined",
+        sender: "system"
+      };
+      displayMessage(message);
+    }
+
+    function youJoined() {
+      const message = {
+        content: "You joined",
+        sender: "system"
+      };
+      displayMessage(message);
+    }
+
+    
+  </script>
+</body>
+</html>
