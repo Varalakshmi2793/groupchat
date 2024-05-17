@@ -19,8 +19,10 @@ router.post('/api/messages', authenticate, messageController.postMessage);
 router.get('/api/users-and-groups', authenticate, getUsersAndGroups);
 router.post('/groups', authenticate, createGroup);
 router.post('/groups/:groupId/users', authenticate, addUserToGroup);
+router.get('/api/users/search', authController.searchUsers);
 
-module.exports = router;
+router.post('/api/chats', messageController.createChat);
+
 
 
 module.exports = router;

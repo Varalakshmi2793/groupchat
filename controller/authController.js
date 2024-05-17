@@ -39,3 +39,13 @@ exports.login = async (req, res) => {
         res.status(500).json({ error: 'Failed to login' });
     }
 };
+exports.searchUsers = async (req, res) =&gt; {
+    try {
+        const { username } = req.query;
+        const users = await User.find({ username: { $regex: username, $options: 'i' } });
+        res.json({ users });
+    } catch (error) {
+        console.error('Error searching for users:', error);
+        res.status(500).json({ error: 'Failed to search for users' });
+    }
+};

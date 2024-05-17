@@ -98,9 +98,10 @@ function displayMessage(message) {
     messageElement.textContent = `${username}: ${message.content}`;
     messagesDiv.appendChild(messageElement);
 }
-
-async function loadMessages() {
+// Function to load messages periodically
+async function loadMessagesPeriodically() {
     try {
+        // Call your API to fetch new messages
         const token = localStorage.getItem('token');
         const chatType = localStorage.getItem('chatType');
         const chatId = localStorage.getItem('chatId');
@@ -129,11 +130,14 @@ async function loadMessages() {
         }
 
         const messagesDiv = document.getElementById('messages');
-        messagesDiv.innerHTML = '';
 
+        // Loop through new messages and display them
         responseData.messages.forEach(message => {
             if ((groupId && message.GroupId === groupId) || (userId && message.UserId === userId)) {
-                displayMessage(message);
+                const messageElement = document.createElement('div');
+                const username = message.User ? message.User.username : 'Unknown';
+                messageElement.textContent = `${username}: ${message.content}`;
+                messagesDiv.appendChild(messageElement);
             }
         });
     } catch (error) {
@@ -141,7 +145,14 @@ async function loadMessages() {
     }
 }
 
-// Event listener for form submission
+// Load messages on window load and start periodic updates
+window.onload = async function() {
+    if (localStorage.getItem('token')) {
+        await loadMessages();
+        setInterval(loadMessagesPeriodically, 1000); // Call loadMessagesPeriodically every 1 second
+    }
+};
+
 document.getElementById('message-form').addEventListener('submit', async (event) => {
     event.preventDefault();
     const content = document.getElementById('message-content').value;

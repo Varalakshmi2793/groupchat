@@ -1,13 +1,14 @@
 const Message = require('../model/message'); 
 const User = require('../model/user'); 
 const Group = require('../model/group'); 
+const Chat = require('../model/Chat');
+
 exports.getMessages = async (req, res) => {
     try {
         const messages = await Message.findAll({
             include: [User, Group]
         });
 
-        // Extracting message data
         const messageData = messages.map(message => ({
             id: message.id,
             content: message.content,
@@ -16,16 +17,14 @@ exports.getMessages = async (req, res) => {
             user: {
                 id: message.User.id,
                 username: message.User.username
-                // Add other user properties if needed
+
             },
             group: {
                 id: message.Group.id,
                 name: message.Group.name
-                // Add other group properties if needed
             }
         }));
 
-        // Sending the message data as JSON
         res.status(200).json({
             messages: messageData
         });
@@ -54,5 +53,20 @@ exports.postMessage = async (req, res) => {
         res.json({ message: result });
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+// chatController.js
+
+
+exports.createChat = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        // Create a new chat room or conversation in your database
+        const newChat = await Chat.create({ participants: [userId] });
+        res.json({ chatId: newChat._id });
+    } catch (error) {
+        console.error('Error creating new chat:', error);
+        res.status(500).json({ error: 'Failed to create new chat' });
     }
 };
