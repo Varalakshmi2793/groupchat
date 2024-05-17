@@ -8,6 +8,7 @@
 </head>
 <body>
     <nav>
+        <label class="logo"> Expense Tracker </label>
         <ul>
             <li><a href="/">Home</a></li>
             <li><a href="/login">Login</a></li>
@@ -27,9 +28,9 @@
             <label for="password">Password:</label>
             <input type="password" class="formcontrol" id="password" name="password">
         </div>
-        <!-- <div class="forgetpass">
+        <div class="forgetpass">
             <a href="/forgetpassword">Forget Password</a>
-        </div> -->
+        </div>
         <div id="message" style="color: rgb(99, 14, 14); display: none;"></div>
         <button type="submit" class="btn">Login In</button>
         
@@ -68,12 +69,16 @@
             }
             
             alert("logged in successfully");
-            window.location.href = '/messages'; 
-
             const data = await response.json();
-            console.log(data); 
+            console.log(data);
+             
             token=data.token;
-            localStorage.setItem('token', token)
+            console.log(token);
+            localStorage.setItem('token', token);
+            
+            window.location.href = '/messages';
+
+            
         } catch (error) {
             console.error('Error:', error);
         }

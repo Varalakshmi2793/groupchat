@@ -4,9 +4,10 @@ const { promisify } = require('util');
 
 const verifyToken = promisify(jwt.verify);
 
-const authenticateToken = async (req, res, next) => {
+exports.authenticate = async (req, res, next) => {
     try {
         const token = req.header('Authorization');
+        console.log(token)
         
         if (!token) {
             console.error('Token is missing from request headers');
@@ -32,6 +33,3 @@ const authenticateToken = async (req, res, next) => {
     }
 };
 
-module.exports = {
-    authenticateToken: authenticateToken
-};

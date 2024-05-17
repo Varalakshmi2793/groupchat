@@ -1,90 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat App</title>
-    <link rel="stylesheet" href="style2.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-    <div class="chat-container">
-        <div class="chat-room-info">
-            <h2>Chat Box</h2>
-        </div>
-        <div id="chat-messages" class="chat-messages">
-
-        </div>
-        <input type="text" id="message-input" placeholder="Type your message...">
-        <button id="send-btn">Send</button>
+  <div id="app">
+    <div id="sidebar">
+      <h2>Contacts / Groups</h2>
+      <ul id="contacts-list">
+        <!-- Contacts and groups will be dynamically added here -->
+      </ul>
     </div>
-
-    <script>
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-btn');
-        const chatMessages = document.getElementById('chat-messages');
-        const roomInfo = document.querySelector('.chat-room-info');
-
-        const friendName = "Friend";
-        const roomName = "Chat App";
-
-        function displayMessage(sender, message) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message');
-            if (sender === "You") {
-                messageDiv.classList.add('you-message');
-            } else {
-                messageDiv.classList.add('friend-message');
-            }
-            messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
-            chatMessages.appendChild(messageDiv);
-        }
-
-        async function sendMessage() {
-            const message = messageInput.value;
-            if (message.trim() !== '') {
-                displayMessage("You", message);
-                messageInput.value = '';
-                try {
-                    const response = await fetch('/message', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ sender: "You", content: message })
-                    });
-                    if (!response.ok) {
-                        throw new Error('Failed to send message');
-                    }
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-        }
-
-        async function fetchMessages() {
-            try {
-                const response = await fetch('/messages');
-                const messages = await response.json();
-                messages.forEach(message => {
-                    displayMessage(message.sender, message.content);
-                });
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        sendButton.addEventListener('click', sendMessage);
-
-        displayMessage("You", "joined");
-        displayMessage(friendName, "joined");
-
-        roomInfo.querySelector('h2').textContent = `Room: ${roomName}`;
-
-        fetchMessages();
-
-    </script>
+    <div id="chat-section">
+      <h2 id="chat-title">Select a chat</h2>
+      <div id="messages"></div>
+      <form id="message-form" style="display: none;">
+        <input type="text" id="message-content" placeholder="Type a message" required>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+  <script src="chat.js"></script>
 </body>
-
 </html>
